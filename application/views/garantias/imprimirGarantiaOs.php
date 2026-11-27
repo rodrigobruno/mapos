@@ -2,7 +2,26 @@
 <html lang="pt-br">
 
 <head>
-    <title>Map OS</title>
+    <?php
+    $hoje = date('d/m/Y');
+    $numeroOs = ! empty($osGarantia->idOs) ? $osGarantia->idOs : '';
+    $mostraValidade = in_array($osGarantia->osStatus ?? '', ['Finalizado', 'Faturado'], true)
+        && ! empty($osGarantia->osDataFinal)
+        && is_numeric($osGarantia->diasGarantia ?? null)
+        && (int) $osGarantia->diasGarantia > 0;
+    $validade = $mostraValidade ? dateInterval($osGarantia->osDataFinal, $osGarantia->diasGarantia) : null;
+    $CI = &get_instance();
+    $CI->load->helper('text');
+    $tituloPdf = url_title(
+        convert_accented_characters('pixelfix-' . $numeroOs . '-garantia-' . ($osGarantia->nomeCliente ?? '')),
+        '-',
+        true
+    );
+    if ($tituloPdf === '') {
+        $tituloPdf = 'pixelfix-garantia';
+    }
+    ?>
+    <title><?= htmlspecialchars($tituloPdf, ENT_QUOTES, 'UTF-8') ?></title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap.min.css" />
@@ -70,16 +89,6 @@
 </head>
 
 <body>
-    <?php
-    $hoje = date('d/m/Y');
-    $numeroOs = ! empty($osGarantia->idOs) ? $osGarantia->idOs : '';
-    $mostraValidade = in_array($osGarantia->osStatus ?? '', ['Finalizado', 'Faturado'], true)
-        && ! empty($osGarantia->osDataFinal)
-        && is_numeric($osGarantia->diasGarantia ?? null)
-        && (int) $osGarantia->diasGarantia > 0;
-    $validade = $mostraValidade ? dateInterval($osGarantia->osDataFinal, $osGarantia->diasGarantia) : null;
-    ?>
-
     <div class="container-fluid page" id="viaCliente">
         <div class="subpage">
             <div class="row-fluid">
@@ -103,7 +112,7 @@
                                                     <?php echo $emitente->email . ' - Fone: ' . $emitente->telefone; ?>
                                                 </span>
                                             </td>
-                                            <td style="width: 20%; text-align: center">
+                                            <td style="width: 20%; text-align: left">
                                                 <br />
                                                 <span>Garantia OS: <?= $numeroOs ?></span>
                                                 <br />

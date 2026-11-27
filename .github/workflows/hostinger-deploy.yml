@@ -1,0 +1,52 @@
+name: Build vendor → hostinger-deploy
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP 8.5
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          extensions: gd, mbstring, curl, mysqli, zip, dom, xml, zlib, iconv, fileinfo
+          tools: composer:v2
+
+      - name: Composer install (produção)
+        run: composer install --optimize-autoloader --no-dev --no-interaction --no-progress
+
+      - name: Confere vendor
+        run: test -f application/vendor/autoload.php
+
+      - name: Publica branch hostinger-deploy
+        env:
+          DEPLOY_BRANCH: hostinger-deploy
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Branch órfã limpa a cada build: só o que a Hostinger precisa puxar
+          git checkout --orphan "$DEPLOY_BRANCH-tmp"
+          # Garante que vendor entra (estava no .gitignore)
+          printf '\n# Deploy Hostinger: vendor gerado na CI\n!/application/vendor/\n!/application/vendor/**\n' >> .gitignore
+
+          git add -A
+          # Não versionar lixo de build / segredos
+          git reset -- .env application/.env node_modules 2>/dev/null || true
+
+          git commit -m "deploy: vendor de produção ($(date -u +%Y-%m-%dT%H:%MZ))"
+          git branch -M "$DEPLOY_BRANCH"
+          git push --force origin "$DEPLOY_BRANCH"

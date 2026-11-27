@@ -163,7 +163,11 @@
                                             <hr style="margin: 0;">
                                         </td>
                                         <td>Assinatura do Técnico Responsável
-                                            <hr>
+                                            <br>
+                                            <img src="<?php echo base_url('assets/img/assinatura-tecnico-garantia.png'); ?>"
+                                                 alt="Assinatura do técnico"
+                                                 style="max-height: 48px; max-width: 220px; height: auto; width: auto; margin: 4px 0;">
+                                            <hr style="margin: 0;">
                                         </td>
                                     </tr>
                                 </tbody>

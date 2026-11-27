@@ -70,6 +70,15 @@
 </head>
 
 <body>
+    <?php
+    $hoje = date('d/m/Y');
+    $numeroOs = ! empty($osGarantia->idOs) ? $osGarantia->idOs : '';
+    $mostraValidade = in_array($osGarantia->osStatus ?? '', ['Finalizado', 'Faturado'], true)
+        && ! empty($osGarantia->osDataFinal)
+        && is_numeric($osGarantia->diasGarantia ?? null)
+        && (int) $osGarantia->diasGarantia > 0;
+    $validade = $mostraValidade ? dateInterval($osGarantia->osDataFinal, $osGarantia->diasGarantia) : null;
+    ?>
 
     <div class="container-fluid page" id="viaCliente">
         <div class="subpage">
@@ -96,12 +105,13 @@
                                             </td>
                                             <td style="width: 20%; text-align: center">
                                                 <br />
-                                                <span>Garantia OS: <?= $osGarantia->idOs ? $osGarantia->idOs : ""?>
-                                                </span>
+                                                <span>Garantia OS: <?= $numeroOs ?></span>
                                                 <br />
-                                                <span>Emissão:
-                                                    <?= $osGarantia->osDataFinal ? date('d/m/Y', strtotime($osGarantia->osDataFinal)) : "" ?>
-                                                </span>
+                                                <span>Emissão: <?= $hoje ?></span>
+                                                <?php if ($validade !== null) { ?>
+                                                    <br />
+                                                    <span>Validade: <?= $validade ?></span>
+                                                <?php } ?>
                                             </td>
                                         </tr>
                                     <?php
@@ -140,12 +150,11 @@
                             <table class="table table-bordered table-condensed">
                                 <tbody>
                                     <tr>
-                                        <td>Data
+                                        <td>Data<br><?= $hoje ?>
                                             <hr>
                                         </td>
-                                        <td>Assinatura do Cliente
+                                        <td><?= $hoje ?>
                                             <hr>
-                                            
                                         </td>
                                         <td>Assinatura do Técnico Responsável
                                             <hr>

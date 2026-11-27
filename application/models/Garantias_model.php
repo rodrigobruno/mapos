@@ -42,7 +42,8 @@ class Garantias_model extends CI_Model
 
     public function getByIdOsGarantia($id)
     {
-        $this->db->select('garantias.*, clientes.nomeCliente, os.idOS as idOs, os.dataFinal as osDataFinal,
+        $this->db->select('garantias.*, clientes.nomeCliente, os.idOs as idOs, os.dataFinal as osDataFinal,
+         os.garantia as diasGarantia, os.status as osStatus,
          usuarios.telefone as tecnicoTelefone, usuarios.email as tecnicoEmail, usuarios.nome as tecnicoName');
         $this->db->from('garantias');
         $this->db->join('os', 'os.garantias_id = garantias.idGarantias');

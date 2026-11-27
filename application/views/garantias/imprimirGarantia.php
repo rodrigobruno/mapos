@@ -10,6 +10,7 @@
 
 <body>
     <div class="doc-folha" id="viaCliente">
+        <?php $hoje = date('d/m/Y'); ?>
         <?php if ($emitente == null) { ?>
             <div class="doc-cabecalho bg-warning-soft text-warning-ink">
                 Você precisa configurar os dados do emitente. &gt;&gt;&gt;<a class="underline" href="<?php echo base_url(); ?>index.php/mapos/emitente">Configurar</a>&lt;&lt;&lt;
@@ -26,7 +27,7 @@
                     <span>E-mail: <?php echo e($emitente->email . ' - Fone: ' . $emitente->telefone); ?></span>
                 </div>
                 <div class="flex w-1/5 flex-col text-center">
-                    <span>Emissão: <?php echo date('d/m/Y'); ?></span>
+                    <span>Emissão: <?= e($hoje) ?></span>
                 </div>
             </div>
         <?php } ?>
@@ -38,8 +39,8 @@
         </div>
 
         <div class="mt-4 grid grid-cols-3 border border-hairline-cool">
-            <div class="border-r border-hairline-cool p-2 pb-8">Data</div>
-            <div class="border-r border-hairline-cool p-2 pb-8">Assinatura do Cliente</div>
+            <div class="border-r border-hairline-cool p-2 pb-8">Data<br><?= e($hoje) ?></div>
+            <div class="border-r border-hairline-cool p-2 pb-8"><?= e($hoje) ?></div>
             <div class="p-2 pb-8">Assinatura do Técnico Responsável</div>
         </div>
     </div>

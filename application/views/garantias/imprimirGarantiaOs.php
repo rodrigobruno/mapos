@@ -10,6 +10,10 @@
 
 <body>
     <div class="doc-folha" id="viaCliente">
+        <?php
+        $hoje = date('d/m/Y');
+        $numeroOs = $osGarantia->idOs ?? '';
+        ?>
         <?php if ($emitente == null) { ?>
             <div class="doc-cabecalho bg-warning-soft text-warning-ink">
                 Você precisa configurar os dados do emitente. &gt;&gt;&gt;<a class="underline" href="<?php echo base_url(); ?>index.php/mapos/emitente">Configurar</a>&lt;&lt;&lt;
@@ -26,8 +30,8 @@
                     <span>E-mail: <?php echo e($emitente->email . ' - Fone: ' . $emitente->telefone); ?></span>
                 </div>
                 <div class="flex w-1/5 flex-col text-center">
-                    <span>Garantia OS: <?= e($osGarantia->idOs ? $osGarantia->idOs : "") ?></span>
-                <span>Emissão: <?= $osGarantia->osDataFinal ? date('d/m/Y', strtotime($osGarantia->osDataFinal)) : "" ?></span>
+                    <span>Garantia OS: <?= e($numeroOs) ?></span>
+                    <span>Emissão: <?= e($hoje) ?></span>
                 </div>
             </div>
         <?php } ?>
@@ -39,8 +43,8 @@
         </div>
 
         <div class="mt-4 grid grid-cols-3 border border-hairline-cool">
-            <div class="border-r border-hairline-cool p-2 pb-8">Data</div>
-            <div class="border-r border-hairline-cool p-2 pb-8">Assinatura do Cliente</div>
+            <div class="border-r border-hairline-cool p-2 pb-8">Data<br><?= e($hoje) ?></div>
+            <div class="border-r border-hairline-cool p-2 pb-8"><?= e($hoje) ?></div>
             <div class="p-2 pb-8">Assinatura do Técnico Responsável</div>
         </div>
     </div>

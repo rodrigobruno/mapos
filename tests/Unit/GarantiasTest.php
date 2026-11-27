@@ -9,6 +9,13 @@ if (! function_exists('site_url')) {
     }
 }
 
+if (! function_exists('base_url')) {
+    function base_url($uri = '')
+    {
+        return 'http://mapos.test/' . ltrim((string) $uri, '/');
+    }
+}
+
 /**
  * Termos de garantia migrados (#2845): listagem filtrada, o controller dentro
  * dos padrões e as views novas.
@@ -199,5 +206,53 @@ final class GarantiasTest extends MaposTestCase
         $this->assertStringNotContainsString('alert(1)', $html);
         $this->assertStringContainsString('href="http://mapos.test/index.php/garantias/imprimir/7"', $html);
         $this->assertStringNotContainsString('Telefone', $html, 'Campo vazio não aparece.');
+    }
+
+    public function testImpressaoDaOsUsaNumeroEDataDinamicosSemAssinaturaDoCliente(): void
+    {
+        $hoje = date('d/m/Y');
+        $html = $this->renderizar('garantias/imprimirGarantiaOs', [
+            'emitente' => (object) [
+                'url_logo' => 'http://mapos.test/logo.png',
+                'nome' => 'Oficina',
+                'cnpj' => '00.000.000/0001-00',
+                'rua' => 'Rua A',
+                'numero' => '10',
+                'bairro' => 'Centro',
+                'cidade' => 'São Paulo',
+                'uf' => 'SP',
+                'email' => 'a@x.com',
+                'telefone' => '11999999999',
+            ],
+            'osGarantia' => (object) [
+                'idOs' => 42,
+                'osDataFinal' => '2020-01-15',
+                'textoGarantia' => 'Cobre a <b>mão de obra</b>',
+            ],
+        ]);
+
+        $this->assertStringContainsString('Garantia OS: 42', $html);
+        $this->assertStringContainsString('Emissão: ' . $hoje, $html);
+        $this->assertStringNotContainsString('Emissão: 15/01/2020', $html, 'Emissão é a data de hoje, não a data final da OS.');
+        $this->assertSame(3, substr_count($html, $hoje), 'Data de hoje na emissão e duas vezes no rodapé.');
+        $this->assertStringNotContainsString('Assinatura do Cliente', $html);
+        $this->assertStringContainsString('Assinatura do Técnico Responsável', $html);
+        $this->assertStringContainsString('<b>mão de obra</b>', $html);
+    }
+
+    public function testGetByIdOsGarantiaDevolveONumeroDaOs(): void
+    {
+        $this->criarBanco();
+        $this->db->query('CREATE TABLE clientes (idClientes INTEGER PRIMARY KEY AUTOINCREMENT, nomeCliente TEXT)');
+        $this->db->query('CREATE TABLE os (idOs INTEGER PRIMARY KEY AUTOINCREMENT, clientes_id INTEGER, usuarios_id INTEGER, garantias_id INTEGER, dataFinal TEXT)');
+        $this->db->query("INSERT INTO clientes (nomeCliente) VALUES ('Ana')");
+        $this->db->query("UPDATE usuarios SET telefone = '11', email = 't@x.com' WHERE idUsuarios = 1");
+        $this->db->query("INSERT INTO os (clientes_id, usuarios_id, garantias_id, dataFinal) VALUES (1, 1, 2, '2026-10-10')");
+
+        $linha = $this->model()->getByIdOsGarantia(1);
+
+        $this->assertSame(1, (int) $linha->idOs);
+        $this->assertSame('90 dias', $linha->refGarantia);
+        $this->assertSame('Ana', $linha->nomeCliente);
     }
 }

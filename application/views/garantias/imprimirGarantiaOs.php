@@ -13,6 +13,11 @@
         <?php
         $hoje = date('d/m/Y');
         $numeroOs = $osGarantia->idOs ?? '';
+        $validade = osVencimentoGarantia(
+            $osGarantia->osDataFinal ?? null,
+            $osGarantia->diasGarantia ?? null,
+            $osGarantia->osStatus ?? null
+        );
         ?>
         <?php if ($emitente == null) { ?>
             <div class="doc-cabecalho bg-warning-soft text-warning-ink">
@@ -32,6 +37,9 @@
                 <div class="flex w-1/5 flex-col text-center">
                     <span>Garantia OS: <?= e($numeroOs) ?></span>
                     <span>Emissão: <?= e($hoje) ?></span>
+                    <?php if ($validade !== null) { ?>
+                        <span>Validade: <?= e(dataBr($validade)) ?></span>
+                    <?php } ?>
                 </div>
             </div>
         <?php } ?>

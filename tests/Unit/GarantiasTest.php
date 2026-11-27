@@ -227,32 +227,51 @@ final class GarantiasTest extends MaposTestCase
             'osGarantia' => (object) [
                 'idOs' => 42,
                 'osDataFinal' => '2020-01-15',
+                'diasGarantia' => '30',
+                'osStatus' => 'Finalizado',
                 'textoGarantia' => 'Cobre a <b>mão de obra</b>',
             ],
         ]);
 
         $this->assertStringContainsString('Garantia OS: 42', $html);
         $this->assertStringContainsString('Emissão: ' . $hoje, $html);
+        $this->assertStringContainsString('Validade: 14/02/2020', $html, 'dataFinal + dias via osVencimentoGarantia.');
         $this->assertStringNotContainsString('Emissão: 15/01/2020', $html, 'Emissão é a data de hoje, não a data final da OS.');
         $this->assertSame(3, substr_count($html, $hoje), 'Data de hoje na emissão e duas vezes no rodapé.');
         $this->assertStringNotContainsString('Assinatura do Cliente', $html);
         $this->assertStringContainsString('Assinatura do Técnico Responsável', $html);
         $this->assertStringContainsString('<b>mão de obra</b>', $html);
+
+        $semValidade = $this->renderizar('garantias/imprimirGarantiaOs', [
+            'emitente' => (object) [
+                'url_logo' => 'http://mapos.test/logo.png', 'nome' => 'Oficina', 'cnpj' => '00.000.000/0001-00',
+                'rua' => 'Rua A', 'numero' => '10', 'bairro' => 'Centro', 'cidade' => 'São Paulo', 'uf' => 'SP',
+                'email' => 'a@x.com', 'telefone' => '11999999999',
+            ],
+            'osGarantia' => (object) [
+                'idOs' => 7, 'osDataFinal' => '2020-01-15', 'diasGarantia' => '30', 'osStatus' => 'Aberto',
+                'textoGarantia' => 'Texto',
+            ],
+        ]);
+        $this->assertStringNotContainsString('Validade:', $semValidade, 'Garantia só corre depois de finalizada/faturada.');
     }
 
     public function testGetByIdOsGarantiaDevolveONumeroDaOs(): void
     {
         $this->criarBanco();
         $this->db->query('CREATE TABLE clientes (idClientes INTEGER PRIMARY KEY AUTOINCREMENT, nomeCliente TEXT)');
-        $this->db->query('CREATE TABLE os (idOs INTEGER PRIMARY KEY AUTOINCREMENT, clientes_id INTEGER, usuarios_id INTEGER, garantias_id INTEGER, dataFinal TEXT)');
+        $this->db->query('CREATE TABLE os (idOs INTEGER PRIMARY KEY AUTOINCREMENT, clientes_id INTEGER, usuarios_id INTEGER, garantias_id INTEGER, dataFinal TEXT, garantia TEXT, status TEXT)');
         $this->db->query("INSERT INTO clientes (nomeCliente) VALUES ('Ana')");
         $this->db->query("UPDATE usuarios SET telefone = '11', email = 't@x.com' WHERE idUsuarios = 1");
-        $this->db->query("INSERT INTO os (clientes_id, usuarios_id, garantias_id, dataFinal) VALUES (1, 1, 2, '2026-10-10')");
+        $this->db->query("INSERT INTO os (clientes_id, usuarios_id, garantias_id, dataFinal, garantia, status) VALUES (1, 1, 2, '2026-10-10', '30', 'Finalizado')");
 
         $linha = $this->model()->getByIdOsGarantia(1);
 
         $this->assertSame(1, (int) $linha->idOs);
         $this->assertSame('90 dias', $linha->refGarantia);
         $this->assertSame('Ana', $linha->nomeCliente);
+        $this->assertSame('30', (string) $linha->diasGarantia);
+        $this->assertSame('Finalizado', $linha->osStatus);
+        $this->assertSame('2026-11-09', osVencimentoGarantia($linha->osDataFinal, $linha->diasGarantia, $linha->osStatus));
     }
 }

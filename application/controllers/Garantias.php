@@ -169,7 +169,12 @@ class Garantias extends MY_Controller
 
         $this->data['custom_error'] = '';
         $this->load->model('mapos_model');
-        $this->data['osGarantia'] = $this->garantias_model->getByIdOsGarantia($this->uri->segment(3));
+        $osGarantia = $this->garantias_model->getByIdOsGarantia($this->uri->segment(3));
+        if (! $osGarantia) {
+            $this->session->set_flashdata('error', 'Termo de Garantia não encontrado para esta OS.');
+            redirect(base_url());
+        }
+        $this->data['osGarantia'] = $osGarantia;
         $this->data['emitente'] = $this->mapos_model->getEmitente();
 
         $this->load->view('garantias/imprimirGarantiaOs', $this->data);

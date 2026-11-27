@@ -70,7 +70,7 @@
 </head>
 
 <body>
-
+    <?php $hoje = date('d/m/Y'); ?>
 
     <div class="container-fluid page" id="viaCliente">
         <div class="subpage">
@@ -98,9 +98,7 @@
                                             </td>
                                             <td style="width: 18%; text-align: center">
                                                 <br /> <br />
-                                                <span>Emissão:
-                                                    <?php echo date('d/m/Y'); ?>
-                                                </span>
+                                                <span>Emissão: <?= $hoje ?></span>
                                             </td>
                                         </tr>
                                     <?php
@@ -139,10 +137,10 @@
                             <table class="table table-bordered table-condensed">
                                 <tbody>
                                     <tr>
-                                        <td>Data
+                                        <td>Data<br><?= $hoje ?>
                                             <hr>
                                         </td>
-                                        <td>Assinatura do Cliente
+                                        <td><?= $hoje ?>
                                             <hr>
                                         </td>
                                         <td>Assinatura do Técnico Responsável

@@ -150,11 +150,8 @@
                             <table class="table table-bordered table-condensed">
                                 <tbody>
                                     <tr>
-                                        <td>Data<br><?= $hoje ?>
-                                            <hr>
-                                        </td>
-                                        <td><?= $hoje ?>
-                                            <hr>
+                                        <td>Data<br><strong><?= $hoje ?></strong>
+                                            <hr style="margin: 0;">
                                         </td>
                                         <td>Assinatura do Técnico Responsável
                                             <hr>

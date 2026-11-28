@@ -162,12 +162,12 @@
                                         <td>Data<br><strong><?= $hoje ?></strong>
                                             <hr style="margin: 0;">
                                         </td>
-                                        <td>Assinatura do Técnico Responsável
-                                            <br>
+                                        <td style="vertical-align: bottom; text-align: center;">
                                             <img src="<?php echo base_url('assets/img/assinatura-tecnico-garantia.png'); ?>"
                                                  alt="Assinatura do técnico"
-                                                 style="max-height: 48px; max-width: 220px; height: auto; width: auto; margin: 4px 0;">
-                                            <hr style="margin: 0;">
+                                                 style="display: block; max-height: 48px; max-width: 220px; height: auto; width: auto; margin: 8px auto -2px;">
+                                            <hr style="margin: 0; border: 0; border-top: 1px solid #333;">
+                                            <span style="display: block; margin-top: 2px;">Assinatura do Técnico Responsável</span>
                                         </td>
                                     </tr>
                                 </tbody>
